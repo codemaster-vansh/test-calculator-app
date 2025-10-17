@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #f9f9f9;
+            --accent-color: #333;
+            --error-color: #f44336;
+            --font-family: 'Arial', sans-serif;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--secondary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .calculator {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            font-size: 1.2em;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 100%;
+        }
+        button {
+            padding: 10px;
+            font-size: 1.2em;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: darkgreen;
+        }
+        .error {
+            color: var(--error-color);
+            font-size: 0.9em;
+        }
+        @media (max-width: 400px) {
+            .calculator {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator" aria-labelledby="calculator-title">
+        <h1 id="calculator-title" style="grid-column: span 1; text-align: center;">Calculator</h1>
+        <input type="text" id="num1" placeholder="First Number" aria-label="First Number">
+        <input type="text" id="num2" placeholder="Second Number" aria-label="Second Number">
+        <div>
+            <button onclick="calculate('add')">Add</button>
+            <button onclick="calculate('subtract')">Subtract</button>
+            <button onclick="calculate('multiply')">Multiply</button>
+            <button onclick="calculate('divide')">Divide</button>
+        </div>
+        <div id="result" style="grid-column: span 1; text-align: center; font-size: 1.5em;"></div>
+        <div id="error" class="error" aria-live="polite"></div>
+    </div>
+    <script>
+        const calculate = (operation) => {
+            const num1 = parseFloat(document.getElementById('num1').value);
+            const num2 = parseFloat(document.getElementById('num2').value);
+            const resultDiv = document.getElementById('result');
+            const errorDiv = document.getElementById('error');
+            resultDiv.textContent = '';
+            errorDiv.textContent = '';
+
+            try {
+                if (isNaN(num1) || isNaN(num2)) {
+                    throw new Error('Please enter valid numbers.');
+                }
+                let result;
+                switch (operation) {
+                    case 'add':
+                        result = num1 + num2;
+                        break;
+                    case 'subtract':
+                        result = num1 - num2;
+                        break;
+                    case 'multiply':
+                        result = num1 * num2;
+                        break;
+                    case 'divide':
+                        if (num2 === 0) throw new Error('Cannot divide by zero.');
+                        result = num1 / num2;
+                        break;
+                    default:
+                        throw new Error('Unknown operation.');
+                }
+                resultDiv.textContent = `Result: ${result}`;
+            } catch (error) {
+                errorDiv.textContent = error.message;
+            }
+        };
+    </script>
+</body>
+</html>
