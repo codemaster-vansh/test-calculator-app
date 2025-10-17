@@ -3,154 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A simple calculator web application for basic arithmetic operations.">
+    <meta property="og:title" content="Simple Calculator">
+    <meta property="og:description" content="A user-friendly calculator for addition, subtraction, multiplication, and division.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://yourwebsite.com">
+    <meta property="og:image" content="https://yourwebsite.com/image.png">
     <title>Simple Calculator</title>
     <style>
         :root {
-            --primary-color: #4CAF50;
-            --secondary-color: #f9f9f9;
-            --error-color: #f44336;
-            --text-color: #333;
-            --font-family: 'Arial', sans-serif;
+            --primary: #4CAF50;
+            --secondary: #FF5722;
+            --background-light: #FFFFFF;
+            --background-dark: #121212;
+            --text-light: #FFFFFF;
+            --text-dark: #000000;
+            --spacing-unit: 8px;
+            --border-radius: 4px;
         }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
+            font-family: Arial, sans-serif;
+            background-color: var(--background-light);
+            color: var(--text-dark);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-            background-color: var(--secondary-color);
-            font-family: var(--font-family);
+            transition: background-color 0.3s;
         }
+
+        body[data-theme='dark'] {
+            background-color: var(--background-dark);
+            color: var(--text-light);
+        }
+
         .calculator {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            max-width: 300px;
-            width: 100%;
+            gap: var(--spacing-unit);
+            width: 300px;
+            padding: var(--spacing-unit);
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        .calculator input,
-        .calculator button {
-            padding: 20px;
+
+        .button {
+            padding: var(--spacing-unit);
+            border: none;
+            border-radius: var(--border-radius);
+            background-color: var(--primary);
+            color: var(--text-light);
             font-size: 1.5em;
-            border: 1px solid var(--primary-color);
-            border-radius: 5px;
+            cursor: pointer;
             transition: background-color 0.3s;
         }
-        .calculator button {
-            background-color: var(--primary-color);
-            color: white;
-            cursor: pointer;
+
+        .button:hover {
+            background-color: var(--secondary);
         }
-        .calculator button:hover {
-            background-color: darkgreen;
-        }
-        .error {
-            color: var(--error-color);
-            font-size: 0.9em;
+
+        .display {
             grid-column: span 4;
-            text-align: center;
+            padding: var(--spacing-unit);
+            background-color: var(--secondary);
+            color: var(--text-light);
+            font-size: 2em;
+            text-align: right;
+            border-radius: var(--border-radius);
         }
-        @media (max-width: 400px) {
-            .calculator {
-                grid-template-columns: repeat(2, 1fr);
+
+        @media (prefers-color-scheme: dark) {
+            .button {
+                background-color: var(--secondary);
+            }
+            .button:hover {
+                background-color: var(--primary);
             }
         }
     </style>
 </head>
 <body>
-    <div class="calculator" role="application" aria-label="Calculator">
-        <input type="text" id="display" aria-label="Display" disabled>
-        <button id="clear">C</button>
-        <button id="divide">/</button>
-        <button id="multiply">*</button>
-        <button id="subtract">-</button>
-        <button id="add">+</button>
-        <button id="equals">=</button>
-        <button class="number" data-value="7">7</button>
-        <button class="number" data-value="8">8</button>
-        <button class="number" data-value="9">9</button>
-        <button class="number" data-value="4">4</button>
-        <button class="number" data-value="5">5</button>
-        <button class="number" data-value="6">6</button>
-        <button class="number" data-value="1">1</button>
-        <button class="number" data-value="2">2</button>
-        <button class="number" data-value="3">3</button>
-        <button class="number" data-value="0">0</button>
-        <div class="error" id="error-message"></div>
-    </div>
+    <main role="main" aria-labelledby="calculator-title">
+        <h1 id="calculator-title" class="visually-hidden">Simple Calculator</h1>
+        <div class="calculator" aria-live="polite">
+            <div class="display" id="display" aria-label="Calculator display">0</div>
+            <button class="button" aria-label="Clear" id="clear">C</button>
+            <button class="button" aria-label="Divide" id="divide">/</button>
+            <button class="button" aria-label="Multiply" id="multiply">*</button>
+            <button class="button" aria-label="Subtract" id="subtract">-</button>
+            <button class="button" aria-label="Add" id="add">+</button>
+            <button class="button" aria-label="1">1</button>
+            <button class="button" aria-label="2">2</button>
+            <button class="button" aria-label="3">3</button>
+            <button class="button" aria-label="4">4</button>
+            <button class="button" aria-label="5">5</button>
+            <button class="button" aria-label="6">6</button>
+            <button class="button" aria-label="7">7</button>
+            <button class="button" aria-label="8">8</button>
+            <button class="button" aria-label="9">9</button>
+            <button class="button" aria-label="0">0</button>
+            <button class="button" aria-label="Equals" id="equals">=</button>
+        </div>
+    </main>
     <script>
+        'use strict';
+
         const display = document.getElementById('display');
-        const errorMessage = document.getElementById('error-message');
+        const buttons = document.querySelectorAll('.button');
         let currentInput = '';
         let operator = '';
-        let firstOperand = null;
+        let previousInput = '';
+
+        const updateDisplay = (value) => {
+            display.textContent = value;
+        };
 
         const clear = () => {
             currentInput = '';
+            previousInput = '';
             operator = '';
-            firstOperand = null;
-            display.value = '';
-            errorMessage.textContent = '';
-        };
-
-        const appendNumber = (number) => {
-            currentInput += number;
-            display.value = currentInput;
-        };
-
-        const setOperator = (op) => {
-            if (currentInput === '') return;
-            if (firstOperand === null) {
-                firstOperand = parseFloat(currentInput);
-            } else {
-                calculate();
-            }
-            operator = op;
-            currentInput = '';
+            updateDisplay('0');
         };
 
         const calculate = () => {
-            try {
-                if (firstOperand === null || currentInput === '') throw new Error('Invalid operation');
-                const secondOperand = parseFloat(currentInput);
-                let result;
-                switch (operator) {
-                    case '+':
-                        result = firstOperand + secondOperand;
-                        break;
-                    case '-':
-                        result = firstOperand - secondOperand;
-                        break;
-                    case '*':
-                        result = firstOperand * secondOperand;
-                        break;
-                    case '/':
-                        if (secondOperand === 0) throw new Error('Cannot divide by zero');
-                        result = firstOperand / secondOperand;
-                        break;
-                    default:
-                        throw new Error('Unknown operator');
-                }
-                display.value = result;
-                currentInput = '';
-                firstOperand = result;
-            } catch (error) {
-                errorMessage.textContent = error.message;
+            let result;
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+            if (isNaN(prev) || isNaN(current)) return;
+            switch (operator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    result = prev / current;
+                    break;
+                default:
+                    return;
             }
+            currentInput = result.toString();
+            operator = '';
+            previousInput = '';
+            updateDisplay(currentInput);
         };
 
-        document.getElementById('clear').addEventListener('click', clear);
-        document.querySelectorAll('.number').forEach(button => {
-            button.addEventListener('click', () => appendNumber(button.dataset.value));
+        buttons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const value = e.target.textContent;
+                if (value === 'C') {
+                    clear();
+                } else if (value === '=') {
+                    calculate();
+                } else if (['+', '-', '*', '/'].includes(value)) {
+                    if (currentInput === '') return;
+                    if (previousInput !== '') {
+                        calculate();
+                    }
+                    operator = value;
+                    previousInput = currentInput;
+                    currentInput = '';
+                } else {
+                    currentInput += value;
+                    updateDisplay(currentInput);
+                }
+            });
         });
-        document.getElementById('add').addEventListener('click', () => setOperator('+'));
-        document.getElementById('subtract').addEventListener('click', () => setOperator('-'));
-        document.getElementById('multiply').addEventListener('click', () => setOperator('*'));
-        document.getElementById('divide').addEventListener('click', () => setOperator('/'));
-        document.getElementById('equals').addEventListener('click', calculate);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                calculate();
+            } else if (e.key === 'Escape') {
+                clear();
+            } else if ('0123456789+-*/'.includes(e.key)) {
+                const button = Array.from(buttons).find(btn => btn.textContent === e.key);
+                if (button) button.click();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            clear();
+        });
     </script>
-    <footer>
-        <p style="text-align:center; font-size:0.8em;">&copy; 2023 Simple Calculator. MIT License.</p>
-    </footer>
 </body>
 </html>
