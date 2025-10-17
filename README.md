@@ -1,18 +1,14 @@
 # Test Calculator App
 
 ## Overview
-The Test Calculator App is a simple yet functional web-based calculator designed to perform basic arithmetic operations such as addition, subtraction, multiplication, and division. Its purpose is to provide users with an intuitive interface for quick calculations, making it a handy tool for everyday use.
+The Test Calculator App is a simple yet functional web application designed to perform basic arithmetic operations including addition, subtraction, multiplication, and division. Its purpose is to provide users with an intuitive interface for quick calculations, making it a handy tool for everyday use.
 
 ## Features
-- Clean and user-friendly UI for easy navigation and operation.
-- Supports four basic arithmetic operations: 
-  - Addition
-  - Subtraction
-  - Multiplication
-  - Division
-- Real-time calculation results displayed as users input numbers and select operations.
-- Responsive design that works seamlessly on various devices and screen sizes.
-- Error handling for division by zero and invalid inputs.
+- **Clean User Interface**: A visually appealing and user-friendly design that enhances the user experience.
+- **Basic Operations**: Supports addition, subtraction, multiplication, and division.
+- **Responsive Design**: Adapts seamlessly to different screen sizes for both desktop and mobile users.
+- **Error Handling**: Provides feedback for invalid operations, such as division by zero.
+- **Accessible UI**: Built with semantic HTML to ensure accessibility for all users.
 
 ## Live Demo
 The application is deployed at: [https://[username].github.io/test-calculator-app/](https://[username].github.io/test-calculator-app/)
@@ -35,7 +31,7 @@ The application is deployed at: [https://[username].github.io/test-calculator-ap
 This application is automatically deployed via GitHub Pages from the main branch.
 
 ## Usage
-To use the calculator, simply enter numbers into the input fields and select the desired arithmetic operation. The result will be displayed immediately. You can perform multiple calculations without refreshing the page. 
+To use the application, simply open the deployed URL or the local version in your web browser. Enter numbers in the input fields and select the desired operation (add, subtract, multiply, divide) by clicking the corresponding button. The result will be displayed immediately below the input fields.
 
 ## Technical Details
 
@@ -45,10 +41,10 @@ To use the calculator, simply enter numbers into the input fields and select the
 - Vanilla JavaScript (ES6+)
 
 ### Architecture
-The code is structured to separate concerns, with HTML for structure, CSS for styling, and JavaScript for functionality. Key components include:
-- `index.html`: The main application file containing the layout and structure.
-- CSS files for styling the UI.
-- JavaScript files handling the logic for calculations and user interactions.
+The code structure is organized to separate concerns, with HTML for structure, CSS for styling, and JavaScript for functionality. Key components include:
+- Input fields for numbers
+- Buttons for operations
+- Display area for results
 
 ### Browser Compatibility
 - Chrome 90+
@@ -68,9 +64,9 @@ test-calculator-app/
 
 ### Code Quality
 - Clean, readable code with comments for better understanding.
-- Responsive design ensuring usability across all screen sizes.
-- Error handling implemented for edge cases, such as division by zero.
-- Accessible UI with semantic HTML to enhance usability for all users.
+- Responsive design that works well across all screen sizes.
+- Error handling to manage edge cases effectively.
+- Accessible UI using semantic HTML to enhance usability for all users.
 
 ## License
 This project is licensed under the MIT License - see the LICENSE file for details.
