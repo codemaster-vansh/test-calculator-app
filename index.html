@@ -8,110 +8,149 @@
         :root {
             --primary-color: #4CAF50;
             --secondary-color: #f9f9f9;
-            --accent-color: #333;
             --error-color: #f44336;
+            --text-color: #333;
             --font-family: 'Arial', sans-serif;
         }
         body {
-            font-family: var(--font-family);
-            background-color: var(--secondary-color);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
+            background-color: var(--secondary-color);
+            font-family: var(--font-family);
         }
         .calculator {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            width: 300px;
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(4, 1fr);
             gap: 10px;
-        }
-        input[type="text"] {
-            padding: 10px;
-            font-size: 1.2em;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            max-width: 300px;
             width: 100%;
         }
-        button {
-            padding: 10px;
-            font-size: 1.2em;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        .calculator input,
+        .calculator button {
+            padding: 20px;
+            font-size: 1.5em;
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
             transition: background-color 0.3s;
         }
-        button:hover {
+        .calculator button {
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+        }
+        .calculator button:hover {
             background-color: darkgreen;
         }
         .error {
             color: var(--error-color);
             font-size: 0.9em;
+            grid-column: span 4;
+            text-align: center;
         }
         @media (max-width: 400px) {
             .calculator {
-                width: 90%;
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
-    <div class="calculator" aria-labelledby="calculator-title">
-        <h1 id="calculator-title" style="grid-column: span 1; text-align: center;">Calculator</h1>
-        <input type="text" id="num1" placeholder="First Number" aria-label="First Number">
-        <input type="text" id="num2" placeholder="Second Number" aria-label="Second Number">
-        <div>
-            <button onclick="calculate('add')">Add</button>
-            <button onclick="calculate('subtract')">Subtract</button>
-            <button onclick="calculate('multiply')">Multiply</button>
-            <button onclick="calculate('divide')">Divide</button>
-        </div>
-        <div id="result" style="grid-column: span 1; text-align: center; font-size: 1.5em;"></div>
-        <div id="error" class="error" aria-live="polite"></div>
+    <div class="calculator" role="application" aria-label="Calculator">
+        <input type="text" id="display" aria-label="Display" disabled>
+        <button id="clear">C</button>
+        <button id="divide">/</button>
+        <button id="multiply">*</button>
+        <button id="subtract">-</button>
+        <button id="add">+</button>
+        <button id="equals">=</button>
+        <button class="number" data-value="7">7</button>
+        <button class="number" data-value="8">8</button>
+        <button class="number" data-value="9">9</button>
+        <button class="number" data-value="4">4</button>
+        <button class="number" data-value="5">5</button>
+        <button class="number" data-value="6">6</button>
+        <button class="number" data-value="1">1</button>
+        <button class="number" data-value="2">2</button>
+        <button class="number" data-value="3">3</button>
+        <button class="number" data-value="0">0</button>
+        <div class="error" id="error-message"></div>
     </div>
     <script>
-        const calculate = (operation) => {
-            const num1 = parseFloat(document.getElementById('num1').value);
-            const num2 = parseFloat(document.getElementById('num2').value);
-            const resultDiv = document.getElementById('result');
-            const errorDiv = document.getElementById('error');
-            resultDiv.textContent = '';
-            errorDiv.textContent = '';
+        const display = document.getElementById('display');
+        const errorMessage = document.getElementById('error-message');
+        let currentInput = '';
+        let operator = '';
+        let firstOperand = null;
 
+        const clear = () => {
+            currentInput = '';
+            operator = '';
+            firstOperand = null;
+            display.value = '';
+            errorMessage.textContent = '';
+        };
+
+        const appendNumber = (number) => {
+            currentInput += number;
+            display.value = currentInput;
+        };
+
+        const setOperator = (op) => {
+            if (currentInput === '') return;
+            if (firstOperand === null) {
+                firstOperand = parseFloat(currentInput);
+            } else {
+                calculate();
+            }
+            operator = op;
+            currentInput = '';
+        };
+
+        const calculate = () => {
             try {
-                if (isNaN(num1) || isNaN(num2)) {
-                    throw new Error('Please enter valid numbers.');
-                }
+                if (firstOperand === null || currentInput === '') throw new Error('Invalid operation');
+                const secondOperand = parseFloat(currentInput);
                 let result;
-                switch (operation) {
-                    case 'add':
-                        result = num1 + num2;
+                switch (operator) {
+                    case '+':
+                        result = firstOperand + secondOperand;
                         break;
-                    case 'subtract':
-                        result = num1 - num2;
+                    case '-':
+                        result = firstOperand - secondOperand;
                         break;
-                    case 'multiply':
-                        result = num1 * num2;
+                    case '*':
+                        result = firstOperand * secondOperand;
                         break;
-                    case 'divide':
-                        if (num2 === 0) throw new Error('Cannot divide by zero.');
-                        result = num1 / num2;
+                    case '/':
+                        if (secondOperand === 0) throw new Error('Cannot divide by zero');
+                        result = firstOperand / secondOperand;
                         break;
                     default:
-                        throw new Error('Unknown operation.');
+                        throw new Error('Unknown operator');
                 }
-                resultDiv.textContent = `Result: ${result}`;
+                display.value = result;
+                currentInput = '';
+                firstOperand = result;
             } catch (error) {
-                errorDiv.textContent = error.message;
+                errorMessage.textContent = error.message;
             }
         };
+
+        document.getElementById('clear').addEventListener('click', clear);
+        document.querySelectorAll('.number').forEach(button => {
+            button.addEventListener('click', () => appendNumber(button.dataset.value));
+        });
+        document.getElementById('add').addEventListener('click', () => setOperator('+'));
+        document.getElementById('subtract').addEventListener('click', () => setOperator('-'));
+        document.getElementById('multiply').addEventListener('click', () => setOperator('*'));
+        document.getElementById('divide').addEventListener('click', () => setOperator('/'));
+        document.getElementById('equals').addEventListener('click', calculate);
     </script>
+    <footer>
+        <p style="text-align:center; font-size:0.8em;">&copy; 2023 Simple Calculator. MIT License.</p>
+    </footer>
 </body>
 </html>
